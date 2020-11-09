@@ -1,0 +1,10 @@
+is
+or
+file
+not
+uniq
+This
+Uniq
+testing
+emptystring
+iscuttingmorethanthirtyletters
