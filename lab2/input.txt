@@ -1,0 +1,11 @@
+ccccd
+q0
+q3, q4
+q0 a q1
+q1 c q1
+q1 d q3
+q0 b q2
+q2 c q2
+q2 d q4
+q1 a q2
+q2 b q1
