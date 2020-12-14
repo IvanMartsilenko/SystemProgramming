@@ -16,19 +16,20 @@ std::condition_variable notifyIndoor;
 std::deque<int> outdoorQueue;
 std::deque<int> indoorQueue;
 const int seats = 7;
+const int maxBufferSize = 20 ;
 
 void clientGenerator(int quantity)
 {
         while(quantity)
     {
         std::unique_lock<std::mutex> locker1(outdoor);
-        notifyOutdoor.wait( locker1);
+        notifyOutdoor.wait( locker1, [](){return outdoorQueue.size() < maxBufferSize;});
         outdoorQueue.push_back(quantity);
         std::cout << "User: " << quantity << " is waiting outside" << std::endl;
         quantity--;
         locker1.unlock();
         notifyOutdoor.notify_one();
-        usleep(rand() % 5000);
+        usleep(rand() % 15000);
     }
 }
 
@@ -38,7 +39,7 @@ static void waitingRoom()
     while (true)
     {
         std::unique_lock<std::mutex> locker1(outdoor);
-        notifyOutdoor.wait( locker1);
+        notifyOutdoor.wait( locker1, [](){return outdoorQueue.size() >= maxBufferSize - seats;});
         user = outdoorQueue.back();
         outdoorQueue.pop_back(); 
         locker1.unlock();
@@ -59,7 +60,7 @@ void hairdresser(int val)
     while (true)
     {
         std::unique_lock<std::mutex> locker2(indoor);
-        notifyIndoor.wait( locker2);
+        notifyIndoor.wait( locker2, [](){return indoorQueue.size() >= seats - 1;});
         user = indoorQueue.back();
         indoorQueue.pop_back();
         locker2.unlock();
@@ -75,11 +76,11 @@ int main()
     std::cout << "Plaese input number of clients" << std::endl;
     int number;
     std::cin >> number; 
-    std::thread generator(clientGenerator, number);
-    std::thread room(waitingRoom);
-    std::cout << "Plaese input duration of hircut" << std::endl;
+    std::cout << "Plaese input duration of haircut" << std::endl;
     int duration;
     std::cin >> duration; 
+    std::thread generator(clientGenerator, number);
+    std::thread room(waitingRoom);
     std::thread worker(hairdresser, duration);
     
     generator.join();
