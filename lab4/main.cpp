@@ -26,7 +26,7 @@ void clientGenerator (int val)
 {
     while (val)
     {
-        if (outdoorQueue.size() == 0 && indoorQueue.size() == 0 && serving.size() < chair)
+        if (outdoorQueue.size() < 1&& indoorQueue.size() < 1  && serving.size() < chair)
         {
             std::unique_lock<std::mutex> lockerHairdresser(service);
             notifyService.wait(lockerHairdresser, [](){return serving.size() < chair;});
@@ -34,7 +34,7 @@ void clientGenerator (int val)
             lockerHairdresser.unlock();
             notifyService.notify_one();
         }
-        else if (outdoorQueue.size() == 0 && indoorQueue.size() < seats)
+        else if (outdoorQueue.size() < 1 && indoorQueue.size() < seats)
         {
             std::unique_lock<std::mutex> lockerIndoor(indoor);
             notifyIndoor.wait(lockerIndoor, [](){return indoorQueue.size() < seats;});
@@ -104,6 +104,7 @@ void hairdresser(int duration)
         lockerHairdresser.unlock();
         std::cout << "User " << user << " is serving" << std::endl;
         usleep(duration);
+        notifyService.notify_one();
     }
 
 }

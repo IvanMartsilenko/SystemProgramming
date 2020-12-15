@@ -14,9 +14,10 @@ main inputPath outputPath = do
    src <- readFile inputPath
    writeFile outputPath $ result src
 
+
    --- dev ---
 
-------------------------------------------- parse data
+------------------------------------------- parse data ------------------------------------------------------------
 test:: String -> String -> IO
 test inputPath outputPath = do 
     writeFile outputPath 
@@ -40,4 +41,4 @@ loadAutomaton x =
         statusTo++elems!!2
         loadAutomaton (tail x) 
 
------------------------------------------ end parsing ---
+----------------------------------------- end parsing -------------------------------------------------------------
